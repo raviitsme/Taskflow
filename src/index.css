@@ -1,0 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Color theme */
+  --color-bg: #0f0f1a;
+  --color-surface: #1a1a2e;
+  --color-card: #25253c;
+  --color-primary: #6c63ff;
+  --color-accent: #a78bfa;
+  --color-success: #23c99a;
+  --color-warning: #f97316;
+  --color-danger: #f43f5e;
+
+  /* Font types */
+  --font-headings: "IBM Plex Serif", serif;
+  --font-body: "Fredoka", sans-serif;
+  --font-mono: "Space Mono", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}

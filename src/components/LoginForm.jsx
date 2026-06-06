@@ -1,0 +1,137 @@
+import { useState } from "react";
+import PremiumInput from "./Input";
+import { Mail, Lock, Eye } from "lucide-react";
+import { CTAButton } from "./Buttons";
+import { loginUser } from "../api/auth";
+import { useNavigate } from "react-router-dom";
+
+
+export default function LoginForm({ switchToRegister }) {
+    const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const { email, password } = formData;
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    console.log("Submitted", formData);
+
+    try {
+      const res = await loginUser({ email, password });
+
+      const data = res.data;
+
+      if (data.u.token) {
+        localStorage.setItem("token", data.u.token);
+        alert("Login successful");
+      }
+      navigate('/dashboard');
+    } catch (err) {
+      console.log(err);
+      alert(err.response?.data?.message || "Login failed");
+    }
+  };
+
+  return (
+    <form onSubmit={handleLogin} className="space-y-7">
+      <PremiumInput
+        label="Email Address"
+        icon={Mail}
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+      />
+      <PremiumInput
+        label="Password"
+        icon={Lock}
+        type="password"
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
+      />
+
+      <div className="flex justify-end">
+        <button
+          type="button"
+          className="
+            text-sm
+            text-primary
+            hover:text-accent
+            cursor-pointer
+            hover:underline
+            transition-all
+            duration-300
+          "
+        >
+          Forgot Password?
+        </button>
+      </div>
+
+      <CTAButton
+        className="w-full
+          rounded-2xl
+          py-4
+          font-semibold
+          
+          text-white
+          transition-all
+          duration-300
+          hover:rounded-3xl
+          hover:scale-[1.02]
+          hover:bg-surface
+          bg-black"
+      >
+        Submit
+      </CTAButton>
+
+      <div className="relative">
+        <div className="h-px bg-white/10" />
+
+        <span
+          className="
+            absolute
+            left-1/2
+            top-1/2
+            -translate-x-1/2
+            -translate-y-1/2
+
+            bg-card
+            px-3
+
+            text-xs
+            text-white/40
+          "
+        >
+          OR
+        </span>
+      </div>
+
+      <p className="text-center text-sm text-white/50">
+        Don't have an account?{" "}
+        <button
+          type="button"
+          onClick={switchToRegister}
+          className="
+            font-medium
+            text-primary
+            hover:text-accent
+            transition
+  "
+        >
+          Create Account
+        </button>
+      </p>
+    </form>
+  );
+}
