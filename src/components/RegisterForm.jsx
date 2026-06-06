@@ -3,14 +3,17 @@ import { User, Mail, Lock } from "lucide-react";
 
 import PremiumInput from "./Input";
 import { CTAButton } from "./Buttons";
+import { registerUser } from "../api/auth";
 
-export default function RegisterForm({ switchToLogin,onSuccess }) {
+export default function RegisterForm({ switchToLogin }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+
+  const { name, email, password, confirmPassword } = formData;
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -19,7 +22,7 @@ export default function RegisterForm({ switchToLogin,onSuccess }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleRegister = async(e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -27,12 +30,28 @@ export default function RegisterForm({ switchToLogin,onSuccess }) {
       return;
     }
 
+    try {
+      const res = await registerUser({ name, email, password, confirmPassword });
+      const data = res.data;
+
+      if(!data.success) {
+        return alert(data.message);
+      }
+
+      alert("Thank you for registering, login now!");
+      switchToLogin();
+
+    } catch (e) {
+      console.error(e);
+      alert("Server error!");
+    }
+
     console.log("Register:", formData);
   };
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleRegister}
       className="space-y-6"
     >
       <PremiumInput

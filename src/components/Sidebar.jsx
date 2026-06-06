@@ -8,6 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const menuItems = [
   {
@@ -32,8 +33,14 @@ export default function Sidebar() {
   const [expanded, setExpanded] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [active, setActive] = useState("Dashboard");
+  const navigate = useNavigate();
 
   const isOpen = expanded || mobileOpen;
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/');
+  }
 
   return (
     <>
@@ -156,6 +163,7 @@ export default function Sidebar() {
         {/* Logout */}
         <div className="p-4 border-t">
           <button
+          onClick={handleLogout}
             className="
               w-full
               flex
