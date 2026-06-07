@@ -4,6 +4,7 @@ import { X, Plus, Calendar, AlertCircle } from "lucide-react";
 export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
   const initialFormState = {
     title: "",
+    description: "",
     priority: "Medium",
     status: "In Progress",
     dueDate: "",
@@ -24,19 +25,7 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
     e.preventDefault();
     if (!form.title.trim()) return;
 
-    // Optional: Format the raw native HTML date (YYYY-MM-DD) into a premium human-readable style
-    let formattedDate = form.dueDate;
-    if (form.dueDate) {
-      const dateObj = new Date(form.dueDate);
-      formattedDate = dateObj.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-    }
-
-    onCreate({ ...form, dueDate: formattedDate || "No due date" });
-    onClose();
+    onCreate(form);
   };
 
   return (
@@ -48,7 +37,7 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
       />
 
       {/* 2. Modal Glass Box Panel */}
-      <div 
+      <div
         className="
           relative w-full max-w-md transform overflow-hidden 
           rounded-4xl border border-white/10 
@@ -64,7 +53,7 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
             <h2 className="text-xl font-bold tracking-tight bg-linear-to-r from-white to-white/70 bg-clip-text text-transparent">
               Create New Task
             </h2>
-            <p className="text-xs text-white/40 mt-0.5">Add a new action item to your active sprint layout.</p>
+            <p className="text-xs text-white/40 mt-0.5">Add a new task.</p>
           </div>
 
           <button
@@ -77,10 +66,11 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
 
         {/* Form Controls */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          
           {/* Input: Title */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold tracking-wide uppercase text-white/40">Task Title</label>
+            <label className="text-xs font-semibold tracking-wide uppercase text-white/40">
+              Task Title
+            </label>
             <input
               type="text"
               required
@@ -91,9 +81,28 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
             />
           </div>
 
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold tracking-wide uppercase text-white/40">
+              Description
+            </label>
+
+            <textarea
+              rows={4}
+              required
+              value={form.description}
+              placeholder="Describe the task..."
+              className="w-full rounded-xl border border-white/5 bg-white/3 px-4 py-3 text-sm text-white placeholder-white/20 outline-none resize-none"
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  description: e.target.value,
+                })
+              }
+            />
+          </div>
+
           {/* Grid Layout for Meta Selectors */}
           <div className="grid grid-cols-2 gap-4">
-            
             {/* Selector: Priority */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold tracking-wide uppercase text-white/40 flex items-center gap-1">
@@ -103,11 +112,19 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
                 <select
                   value={form.priority}
                   className="w-full rounded-xl border border-white/5 bg-white/3 px-4 py-3 text-sm text-white outline-none transition appearance-none cursor-pointer focus:border-primary/40 focus:bg-white/5"
-                  onChange={(e) => setForm({ ...form, priority: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, priority: e.target.value })
+                  }
                 >
-                  <option value="Low" className="bg-card text-white">Low</option>
-                  <option value="Medium" className="bg-card text-white">Medium</option>
-                  <option value="High" className="bg-card text-white">High</option>
+                  <option value="Low" className="bg-card text-white">
+                    Low
+                  </option>
+                  <option value="Medium" className="bg-card text-white">
+                    Medium
+                  </option>
+                  <option value="High" className="bg-card text-white">
+                    High
+                  </option>
                 </select>
                 {/* Custom indicator chevron drop arrow */}
                 <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/30 text-xs">
@@ -127,11 +144,12 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
                   value={form.dueDate}
                   /* scheme-dark keeps calendar popup panels dark mode natively */
                   className="w-full rounded-xl border border-white/5 bg-white/3 px-4 py-3 text-sm text-white outline-none transition cursor-pointer scheme-dark focus:border-primary/40 focus:bg-white/5"
-                  onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, dueDate: e.target.value })
+                  }
                 />
               </div>
             </div>
-
           </div>
 
           {/* Bottom Call to Action Button Layout */}
@@ -159,7 +177,6 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
               Create Task
             </button>
           </div>
-
         </form>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
@@ -6,43 +6,65 @@ import StatsCard from "../components/StatsCard";
 import TaskCard from "../components/TaskCard";
 import CreateTaskModal from "../components/CreateTaskModal";
 import { Plus, ListFilter, KanbanSquare } from "lucide-react";
+import { createTask, getTasks, toggleTask as toggleTaskApi } from "../api/tasks";
 
 export default function Dashboard() {
-  const [tasks, setTasks] = useState([
-    {
-      id: "task-1",
-      title: "Design Premium SaaS Landing Page Component Layers",
-      priority: "High",
-      status: "In Progress",
-      dueDate: "June 06, 2026",
-    },
-    {
-      id: "task-2",
-      title: "Fix sticky floating navigation context layout bug",
-      priority: "Medium",
-      status: "Done",
-      dueDate: "June 05, 2026",
-    },
-    {
-      id: "task-3",
-      title: "Write end-to-end API system telemetry documentation",
-      priority: "Low",
-      status: "In Progress",
-      dueDate: "June 08, 2026",
-    },
-  ]);
+  // const [tasks, setTasks] = useState([
+  //   {
+  //     id: "task-1",
+  //     title: "Design Premium SaaS Landing Page Component Layers",
+  //     priority: "High",
+  //     status: "In Progress",
+  //     dueDate: "June 06, 2026",
+  //   },
+  //   {
+  //     id: "task-2",
+  //     title: "Fix sticky floating navigation context layout bug",
+  //     priority: "Medium",
+  //     status: "Done",
+  //     dueDate: "June 05, 2026",
+  //   },
+  //   {
+  //     id: "task-3",
+  //     title: "Write end-to-end API system telemetry documentation",
+  //     priority: "Low",
+  //     status: "In Progress",
+  //     dueDate: "June 08, 2026",
+  //   },
+  // ]);
 
+  const [tasks, setTasks] = useState([]);
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState("All");
 
+  // Get tasks
+  const fetchTasks = async () => {
+    try {
+      const res = await getTasks();
+
+      setTasks(res.data.tasks);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
   // Add Task
-  const addTask = (newFormValues) => {
-    const newTask = {
-      id: `task-${Date.now()}`,
-      ...newFormValues,
-    };
-    setTasks((prev) => [newTask, ...prev]);
-  };
+  const addTask = async(newTask) => {
+    try {
+      const res = await createTask(newTask);
+      setTasks((prev) => [
+        res.data.task,
+        ...prev,
+      ]);
+      setOpen(false);
+    } catch(e) {
+      console.error(e);
+    }
+  }
 
   // Delete Task
   const deleteTask = (id) => {
@@ -50,18 +72,15 @@ export default function Dashboard() {
   };
 
   // Toggle Task
-  const toggleTask = (id) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id
-          ? {
-              ...task,
-              status: task.status === "Done" ? "In Progress" : "Done",
-            }
-          : task
-      )
-    );
-  };
+  const toggleTask = async(id) => {
+    try {
+      const res = await toggleTaskApi(id);
+
+      setTasks((prev) => prev.map((task) => task._id === id ? res.data.task : task))
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   // Filter Engine
   const filteredTasks = tasks.filter((task) => {
@@ -104,7 +123,7 @@ export default function Dashboard() {
 
             <button
               onClick={() => setOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-primary rounded-xl hover:opacity-90 transition"
+              className="flex items-center cursor-pointer gap-2 px-4 py-2.5 bg-primary rounded-xl hover:opacity-90 transition"
             >
               <Plus size={16} />
               Create Task
@@ -131,7 +150,7 @@ export default function Dashboard() {
             />
             <StatsCard
               title="High Priority"
-              value={tasks.filter((t) => t.status === "High").length}
+              value={tasks.filter((t) => t.priority === "High").length}
               color="text-rose-400"
             />
           </div>
@@ -143,7 +162,7 @@ export default function Dashboard() {
               <button
                 key={type}
                 onClick={() => setFilter(type)}
-                className={`px-3 py-1 rounded-lg text-xs transition ${
+                className={`px-3 py-1 rounded-lg cursor-pointer text-xs transition ${
                   filter === type
                     ? "bg-white/10 text-white"
                     : "text-white/40 hover:text-white"
@@ -158,10 +177,10 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredTasks.map((task) => (
               <TaskCard
-                key={task.id}
+                key={task._id}
                 task={task}
-                onDelete={() => deleteTask(task.id)}
-                onToggle={() => toggleTask(task.id)}
+                onDelete={() => deleteTask(task._id)}
+                onToggle={() => toggleTask(task._id)}
               />
             ))}
           </div>

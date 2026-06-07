@@ -13,6 +13,13 @@ export default function RegisterForm({ switchToLogin }) {
     confirmPassword: "",
   });
 
+  const [error, setError] = useState("");
+
+  const nameRegex = /^[A-Za-z\s]{3,}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
   const { name, email, password, confirmPassword } = formData;
 
   const handleChange = (e) => {
@@ -22,25 +29,53 @@ export default function RegisterForm({ switchToLogin }) {
     }));
   };
 
-  const handleRegister = async(e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+    if(!name || !email || !password || !confirmPassword) {
+      setError("Please fill all fields!")
       return;
     }
 
+    if (!nameRegex.test(name)) {
+      setError("Name must contain at least 3 letters");
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      setError("Enter a valid email address");
+      return;
+    }
+
+    if (!passwordRegex.test(password)) {
+      setError(
+        "Password must be 8+ chars and contain uppercase, lowercase, number and special character",
+      );
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setError("");
+
     try {
-      const res = await registerUser({ name, email, password, confirmPassword });
+      const res = await registerUser({
+        name,
+        email,
+        password,
+        confirmPassword,
+      });
       const data = res.data;
 
-      if(!data.success) {
+      if (!data.success) {
         return alert(data.message);
       }
 
       alert("Thank you for registering, login now!");
       switchToLogin();
-
     } catch (e) {
       console.error(e);
       alert("Server error!");
@@ -50,10 +85,7 @@ export default function RegisterForm({ switchToLogin }) {
   };
 
   return (
-    <form
-      onSubmit={handleRegister}
-      className="space-y-6"
-    >
+    <form onSubmit={handleRegister} className="space-y-6">
       <PremiumInput
         label="Full Name"
         icon={User}
@@ -88,6 +120,8 @@ export default function RegisterForm({ switchToLogin }) {
         value={formData.confirmPassword}
         onChange={handleChange}
       />
+
+      {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
       <CTAButton
         className="

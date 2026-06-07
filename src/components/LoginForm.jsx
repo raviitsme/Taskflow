@@ -5,9 +5,10 @@ import { CTAButton } from "./Buttons";
 import { loginUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 
-
 export default function LoginForm({ switchToRegister }) {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -24,7 +25,13 @@ export default function LoginForm({ switchToRegister }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Submitted", formData);
+    setError("");
+    setSuccess("");
+
+    if (!email || !password) {
+      setError("Please fill all fields!");
+      return;
+    }
 
     try {
       const res = await loginUser({ email, password });
@@ -33,12 +40,17 @@ export default function LoginForm({ switchToRegister }) {
 
       if (data.u.token) {
         localStorage.setItem("token", data.u.token);
-        alert("Login successful");
+
+        setError("");
+        setSuccess(data.message);
+
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 2000);
       }
-      navigate('/dashboard');
     } catch (err) {
       console.log(err);
-      alert(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || "Invalid Credentials");
     }
   };
 
@@ -78,19 +90,16 @@ export default function LoginForm({ switchToRegister }) {
         </button>
       </div>
 
+      {error && <p className="text-sm text-red-400 text-center">{error}</p>}
+      {success && <p className="text-sm text-success text-center">{success}</p>}
       <CTAButton
         className="w-full
-          rounded-2xl
+          bg-primary
           py-4
           font-semibold
-          
-          text-white
-          transition-all
-          duration-300
-          hover:rounded-3xl
+          hover:bg-accent
           hover:scale-[1.02]
-          hover:bg-surface
-          bg-black"
+          hover:rounded-3xl"
       >
         Submit
       </CTAButton>
@@ -125,6 +134,7 @@ export default function LoginForm({ switchToRegister }) {
           className="
             font-medium
             text-primary
+            cursor-progress
             hover:text-accent
             transition
   "

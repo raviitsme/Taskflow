@@ -35,7 +35,7 @@ export default function StatsCard({ title, value, color = "text-primary", icon }
 
         {/* Decorative subtle icon container if passed */}
         {icon && (
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/5 bg-white/2 text-white/50 transition-all duration-500 group-hover:scale-110 group-hover:border-white/10 group-hover:text-white">
+          <div className="flex h-9 w-9 cursor-pointer hover:text-success items-center justify-center rounded-xl border border-white/5 bg-white/2 text-white/50 transition-all duration-500 group-hover:scale-110 group-hover:border-white/10 group-hover:text-white">
             {icon}
           </div>
         )}

@@ -102,7 +102,13 @@ export default function TaskCard({ task, onToggle, onDelete }) {
         {/* Due Date */}
         <span className="flex items-center gap-1.5 text-white/40">
           <Calendar size={13} />
-          <span className="font-mono">{task.dueDate}</span>
+          <p>
+            {task.dueDate ? new Date(task.dueDate).toLocaleDateString("en-US", {
+              month : "short",
+              day : "numeric",
+              year : "numeric",
+            }) : "No due date"}
+          </p>
         </span>
       </div>
 
