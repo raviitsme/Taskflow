@@ -147,7 +147,10 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
           }} className="text-left text-white/80 hover:text-white">
             Login
           </button>
-          <button className="rounded-full cursor-pointer bg-primary px-5 py-2 text-white">
+          <button onClick={() => {
+            onRegisterClick();
+            setMenuOpen(false);
+          }} className="rounded-full cursor-pointer bg-primary px-5 py-2 text-white">
             Get Started
           </button>
         </div>
