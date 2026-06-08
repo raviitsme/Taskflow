@@ -20,7 +20,6 @@ export default function MyTasks() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
 
-
   const fetchTasks = async () => {
     try {
       const res = await getTasks(page, search, filter);
@@ -39,7 +38,7 @@ export default function MyTasks() {
   const handleSubmitTask = async (taskData) => {
     try {
       const res = await updateTaskApi(editingTask._id, taskData);
-        
+
       fetchTasks();
 
       setTasks((prev) =>
@@ -47,7 +46,6 @@ export default function MyTasks() {
           task._id === editingTask._id ? res.data.task : task,
         ),
       );
-
 
       setOpen(false);
       setEditingTask(null);
@@ -107,7 +105,7 @@ export default function MyTasks() {
               placeholder="Search tasks..."
               value={search}
               onChange={(e) => {
-                setSearch(e.target.value)
+                setSearch(e.target.value);
                 setPage(1);
               }}
               className="
@@ -127,9 +125,9 @@ export default function MyTasks() {
                 <button
                   key={type}
                   onClick={() => {
-                    setFilter(type)
-                    setPage(1)
-                }}
+                    setFilter(type);
+                    setPage(1);
+                  }}
                   className={`
             px-4 py-2
             rounded-lg
@@ -188,35 +186,35 @@ export default function MyTasks() {
           {/* Pagination */}
           <div className="flex justify-center items-center gap-4 mt-10 pt-6 border-t border-white/10">
             <button
-              disabled={page === 1}
+              disabled={page === 1 || totalPages <= 1}
               onClick={() => setPage((prev) => prev - 1)}
               className="
-        px-5 py-2.5
-        rounded-xl
-        bg-white/10
-        hover:bg-white/15
-        disabled:opacity-40
-        disabled:cursor-not-allowed
-      "
+    px-5 py-2.5
+    rounded-xl
+    bg-white/10
+    hover:bg-white/15
+    disabled:opacity-40
+    disabled:cursor-not-allowed
+  "
             >
               Previous
             </button>
 
             <div className="px-4 py-2 rounded-xl bg-white/5">
-              Page {page} of {totalPages}
+              Page {tasks.length ? page : 0} of {totalPages}
             </div>
 
             <button
-              disabled={page === totalPages}
+              disabled={page === totalPages || totalPages <= 1}
               onClick={() => setPage((prev) => prev + 1)}
               className="
-        px-5 py-2.5
-        rounded-xl
-        bg-primary
-        hover:bg-primary/80
-        disabled:opacity-40
-        disabled:cursor-not-allowed
-      "
+    px-5 py-2.5
+    rounded-xl
+    bg-primary
+    hover:bg-primary/80
+    disabled:opacity-40
+    disabled:cursor-not-allowed
+  "
             >
               Next
             </button>
