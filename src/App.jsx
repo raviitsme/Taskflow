@@ -3,6 +3,7 @@ import LandingPage from "./LandingPage"
 import Dashboard from "./pages/Dashboard"
 import LoginForm from "./components/LoginForm";
 import ProtectedRoute from "./components/ProtectedRoute";
+import MyTasks from "./pages/MyTasks";
 
 
 function App() {
@@ -14,6 +15,11 @@ function App() {
           <Dashboard />
         </ProtectedRoute>
       } />
+      <Route path="/tasks" element={
+        <ProtectedRoute>
+          <MyTasks/>
+        </ProtectedRoute>
+      }></Route>
     </Routes>
   )
 }

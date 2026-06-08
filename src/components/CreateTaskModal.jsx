@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { X, Plus, Calendar, AlertCircle } from "lucide-react";
 
-export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
+export default function CreateTaskModal({
+  isOpen,
+  onClose,
+  onCreate,
+  editingTask,
+}) {
   const initialFormState = {
     title: "",
     description: "",
@@ -11,20 +16,46 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
   };
 
   const [form, setForm] = useState(initialFormState);
+  const [error, setError] = useState("");
 
   // Reset form states cleanly whenever the modal opens or closes
   useEffect(() => {
     if (!isOpen) {
       setForm(initialFormState);
+      setError("");
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if(editingTask) {
+      setForm({
+        title : editingTask.title || "",
+        description : editingTask.description || "",
+        priority : editingTask.priority || "Medium",
+        status : editingTask.status || "In Progress",
+        dueDate : editingTask.dueDate ? editingTask.dueDate.split("T")[0] : "",
+      });
+    } else {
+      setForm(initialFormState);
+    }
+  }, [editingTask, isOpen])
 
   if (!isOpen) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.title.trim()) return;
 
+    if (
+      !form.title.trim() ||
+      !form.description.trim() ||
+      !form.priority ||
+      !form.dueDate
+    ) {
+      setError("Fill all fields!");
+      return;
+    }
+
+    setError("");
     onCreate(form);
   };
 
@@ -51,9 +82,11 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
         <div className="flex items-center justify-between border-b border-white/6 pb-4 mb-6">
           <div>
             <h2 className="text-xl font-bold tracking-tight bg-linear-to-r from-white to-white/70 bg-clip-text text-transparent">
-              Create New Task
+              {editingTask ? "Edit Task" : "Create New Task"}
             </h2>
-            <p className="text-xs text-white/40 mt-0.5">Add a new task.</p>
+            <p className="text-xs text-white/40 mt-0.5">
+              {editingTask ? "Update task details..." : "Add a new task"}
+            </p>
           </div>
 
           <button
@@ -77,7 +110,10 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
               placeholder="e.g., Optimize database indexing on transactional tables"
               value={form.title}
               className="w-full rounded-xl border border-white/5 bg-white/3 px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition focus:border-primary/40 focus:bg-white/5"
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              onChange={(e) => {
+                setForm({ ...form, title: e.target.value })
+                setError("");
+              }}
             />
           </div>
 
@@ -150,10 +186,12 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
                 />
               </div>
             </div>
+
+            {error && <p className="text-sm text-red-500 my-1.5">{error}</p>}
           </div>
 
           {/* Bottom Call to Action Button Layout */}
-          <div className="pt-4 flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={onClose}
@@ -174,7 +212,7 @@ export default function CreateTaskModal({ isOpen, onClose, onCreate }) {
               disabled={!form.title.trim()}
             >
               <Plus size={16} className="stroke-[2.5]" />
-              Create Task
+              {editingTask ? "Update Task" : "Create Task"}
             </button>
           </div>
         </form>

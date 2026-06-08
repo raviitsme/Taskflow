@@ -6,7 +6,14 @@ import StatsCard from "../components/StatsCard";
 import TaskCard from "../components/TaskCard";
 import CreateTaskModal from "../components/CreateTaskModal";
 import { Plus, ListFilter, KanbanSquare } from "lucide-react";
-import { createTask, getTasks, toggleTask as toggleTaskApi } from "../api/tasks";
+import {
+  createTask,
+  getTasks,
+  toggleTask as toggleTaskApi,
+  updateTask as updateTaskApi,
+  deleteTask as deleteTaskApi,
+} from "../api/tasks";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   // const [tasks, setTasks] = useState([
@@ -36,6 +43,17 @@ export default function Dashboard() {
   const [tasks, setTasks] = useState([]);
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState("All");
+  const [editingTask, setEditingTask] = useState(null);
+  const [activePage, setActivePage] = useState("Dashboard");
+  const navigate = useNavigate();
+
+  const recentTasks = [...tasks]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 3);
+
+  const pendingTasks = tasks.filter((task) => task.status !== "Done");
+
+  const completedTasks = tasks.filter((task) => task.status === "Done");
 
   // Get tasks
   const fetchTasks = async () => {
@@ -46,41 +64,59 @@ export default function Dashboard() {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
   useEffect(() => {
     fetchTasks();
   }, []);
 
   // Add Task
-  const addTask = async(newTask) => {
+  const handleSubmitTask = async (taskData) => {
     try {
-      const res = await createTask(newTask);
-      setTasks((prev) => [
-        res.data.task,
-        ...prev,
-      ]);
+      if (editingTask) {
+        const res = await updateTaskApi(editingTask._id, taskData);
+
+        setTasks((prev) =>
+          prev.map((task) =>
+            task._id === editingTask._id ? res.data.task : task,
+          ),
+        );
+      } else {
+        const res = await createTask(taskData);
+
+        setTasks((prev) => [res.data.task, ...prev]);
+      }
+
       setOpen(false);
-    } catch(e) {
-      console.error(e);
-    }
-  }
-
-  // Delete Task
-  const deleteTask = (id) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
-  };
-
-  // Toggle Task
-  const toggleTask = async(id) => {
-    try {
-      const res = await toggleTaskApi(id);
-
-      setTasks((prev) => prev.map((task) => task._id === id ? res.data.task : task))
+      setEditingTask(null);
     } catch (e) {
       console.error(e);
     }
-  }
+  };
+
+  // Delete Task
+  const deleteTask = async (id) => {
+    try {
+      await deleteTaskApi(id);
+
+      setTasks((prev) => prev.filter((task) => task._id !== id));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Toggle Task
+  const toggleTask = async (id) => {
+    try {
+      const res = await toggleTaskApi(id);
+
+      setTasks((prev) =>
+        prev.map((task) => (task._id === id ? res.data.task : task)),
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   // Filter Engine
   const filteredTasks = tasks.filter((task) => {
@@ -93,13 +129,11 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-bg text-white font-sans antialiased">
-
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar activePage={activePage} setActivePage={setActivePage} />
 
       {/* RIGHT SIDE */}
       <div className="flex-1 flex flex-col relative overflow-hidden">
-
         <Topbar />
 
         {/* FIXED BACKGROUND BLOBS */}
@@ -108,10 +142,8 @@ export default function Dashboard() {
 
         {/* MAIN SCROLL AREA */}
         <main className="relative z-10 flex-1 overflow-y-auto p-6 md:p-8 max-w-7xl w-full mx-auto space-y-10">
-
           {/* HEADER */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/5 pb-6">
-
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-white">
                 Workspace Board
@@ -123,12 +155,11 @@ export default function Dashboard() {
 
             <button
               onClick={() => setOpen(true)}
-              className="flex items-center cursor-pointer gap-2 px-4 py-2.5 bg-primary rounded-xl hover:opacity-90 transition"
+              className="flex items-center cursor-pointer gap-2 px-4 py-2.5 bg-primary rounded-xl hover:bg-accent/5 transitionall duration-200"
             >
               <Plus size={16} />
               Create Task
             </button>
-
           </div>
 
           {/* STATS */}
@@ -156,34 +187,68 @@ export default function Dashboard() {
           </div>
 
           {/* FILTERS */}
-          <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl w-fit">
+          <div className="flex justify-between">
+            <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl w-fit">
+              {["All", "Pending", "Done", "High"].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setFilter(type)}
+                  className={`px-3 py-1 rounded-lg cursor-pointer text-xs transition ${
+                    filter === type
+                      ? "bg-white/10 text-white"
+                      : "text-white/40 hover:text-white"
+                  }`}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
 
-            {["All", "Pending", "Done", "High"].map((type) => (
+            <div className="bg-primary font-semibold hover:bg-accent/5 transition-all duration-200 text-white rounded-2xl">
               <button
-                key={type}
-                onClick={() => setFilter(type)}
-                className={`px-3 py-1 rounded-lg cursor-pointer text-xs transition ${
-                  filter === type
-                    ? "bg-white/10 text-white"
-                    : "text-white/40 hover:text-white"
-                }`}
+                onClick={() => navigate("/tasks")}
+                className="text-sm cursor-pointer py-3 px-5"
               >
-                {type}
+                View All →
               </button>
-            ))}
+            </div>
           </div>
 
           {/* TASKS */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredTasks.map((task) => (
-              <TaskCard
-                key={task._id}
-                task={task}
-                onDelete={() => deleteTask(task._id)}
-                onToggle={() => toggleTask(task._id)}
-              />
-            ))}
-          </div>
+          {activePage === "Dashboard" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {recentTasks.map((task) => (
+                <TaskCard
+                  key={task._id}
+                  task={task}
+                  onDelete={() => deleteTask(task._id)}
+                  onToggle={() => toggleTask(task._id)}
+                  onEdit={() => {
+                    setEditingTask(task);
+                    setOpen(true);
+                  }}
+                />
+              ))}
+            </div>
+          )}
+          
+          {activePage === "My Tasks" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {pendingTasks.map((task) => (
+                <TaskCard
+                  key={task._id}
+                  task={task}
+                  onDelete={() => deleteTask(task._id)}
+                  onToggle={() => toggleTask(task._id)}
+                  onEdit={() => {
+                    setEditingTask(task);
+                    setOpen(true);
+                  }}
+                />
+              ))}
+            </div>
+          )}
+          
 
           {/* EMPTY STATE */}
           {filteredTasks.length === 0 && (
@@ -191,15 +256,18 @@ export default function Dashboard() {
               No tasks found for "{filter}"
             </div>
           )}
-
         </main>
       </div>
 
       {/* MODAL */}
       <CreateTaskModal
         isOpen={open}
-        onClose={() => setOpen(false)}
-        onCreate={addTask}
+        onClose={() => {
+          setOpen(false);
+          setEditingTask(null);
+        }}
+        onCreate={handleSubmitTask}
+        editingTask={editingTask}
       />
     </div>
   );

@@ -1,6 +1,6 @@
-import { CheckCircle2, Clock, Calendar, Trash2 } from "lucide-react";
+import { CheckCircle2, Clock, Calendar, Trash2, Pencil } from "lucide-react";
 
-export default function TaskCard({ task, onToggle, onDelete }) {
+export default function TaskCard({ task, onToggle, onDelete, onEdit }) {
   const priorityThemes = {
     High: {
       text: "text-rose-400 border-rose-500/20 bg-rose-500/10",
@@ -45,7 +45,6 @@ export default function TaskCard({ task, onToggle, onDelete }) {
 
       {/* Header: Title + Actions */}
       <div className="flex items-start justify-between gap-3 pl-2">
-
         {/* Title */}
         <h3
           className={`
@@ -63,11 +62,10 @@ export default function TaskCard({ task, onToggle, onDelete }) {
 
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
-          
           {/* Toggle */}
           <button
             onClick={onToggle}
-            className="text-white/40 cursor-pointer hover:text-white transition"
+            className="text-white/40 cursor-pointer hover:text-success transition"
           >
             <CheckCircle2 size={16} />
           </button>
@@ -79,23 +77,35 @@ export default function TaskCard({ task, onToggle, onDelete }) {
           >
             <Trash2 size={16} />
           </button>
+
+          {/* Edit */}
+          <button
+            onClick={onEdit}
+            className="text-white/40 cursor-pointer hover:text-sky-400 transition"
+          >
+            <Pencil size={16} />
+          </button>
         </div>
       </div>
 
+      <p
+        className={`
+          mt-2 pl-2 text-sm leading-relaxed line-clamp-3
+          ${isDone ? "text-white/25" : "text-white/50"}
+        `}
+      >
+        {task.description}
+      </p>
+
       {/* Status */}
       <div className="flex items-center justify-between mt-4 text-xs">
-
         <span
           className={`
             flex items-center gap-1.5
             ${isDone ? "text-emerald-400" : "text-white/40"}
           `}
         >
-          {isDone ? (
-            <CheckCircle2 size={14} />
-          ) : (
-            <Clock size={14} />
-          )}
+          {isDone ? <CheckCircle2 size={14} /> : <Clock size={14} />}
           {task.status}
         </span>
 
@@ -103,11 +113,13 @@ export default function TaskCard({ task, onToggle, onDelete }) {
         <span className="flex items-center gap-1.5 text-white/40">
           <Calendar size={13} />
           <p>
-            {task.dueDate ? new Date(task.dueDate).toLocaleDateString("en-US", {
-              month : "short",
-              day : "numeric",
-              year : "numeric",
-            }) : "No due date"}
+            {task.dueDate
+              ? new Date(task.dueDate).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              : "No due date"}
           </p>
         </span>
       </div>

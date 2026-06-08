@@ -8,32 +8,36 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const menuItems = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
+    path: "/dashboard",
   },
   {
     title: "My Tasks",
     icon: CheckSquare,
+    path: "/tasks",
   },
   {
     title: "Completed",
     icon: ClipboardCheck,
+    path: "/completed",
   },
   {
     title: "Profile",
     icon: User,
+    path: "/profile",
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ activePage, setActivePage }) {
   const [expanded, setExpanded] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [active, setActive] = useState("Dashboard");
   const navigate = useNavigate();
+  const location = useLocation();
 
   const isOpen = expanded || mobileOpen;
 
@@ -113,12 +117,12 @@ export default function Sidebar() {
           <ul className="space-y-2 flex flex-col justify-center">
             {menuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = active === item.title;
+              const isActive = activePage === item.title;
 
               return (
                 <li key={item.title}>
                   <button
-                    onClick={() => setActive(item.title)}
+                    onClick={() => navigate(item.path)}
                     className={`
                       w-full
                       flex

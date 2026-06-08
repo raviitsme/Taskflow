@@ -2,17 +2,7 @@ import { Bell, Search, User } from "lucide-react";
 
 export default function Topbar() {
   return (
-    <header className="w-full h-16 px-4 md:px-6 pl-16 md:pl-6 flex items-center justify-between border-b bg-surface">
-      {/* Search */}
-      <div className="flex items-center gap-2 w-full max-w-md bg-white/5 px-3 py-2 rounded-lg">
-        <Search size={18} className="text-gray-400" />
-
-        <input
-          type="text"
-          placeholder="Search tasks..."
-          className="bg-transparent w-full outline-none text-sm text-white placeholder:text-gray-400"
-        />
-      </div>
+    <header className="w-full h-16 px-4 md:px-6 pl-16 md:pl-6 flex items-center justify-end border-b bg-surface">
 
       {/* Right Side */}
       <div className="flex items-center gap-4 ml-4">
