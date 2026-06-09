@@ -7,44 +7,47 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const menuItems = [
-  {
-    title: "Dashboard",
-    icon: LayoutDashboard,
-    path: "/dashboard",
-  },
-  {
-    title: "My Tasks",
-    icon: CheckSquare,
-    path: "/tasks",
-  },
-  {
-    title: "Completed",
-    icon: ClipboardCheck,
-    path: "/completed",
-  },
-  {
-    title: "Profile",
-    icon: User,
-    path: "/profile",
-  },
+  { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+  { title: "My Tasks", icon: CheckSquare, path: "/tasks" },
+  { title: "Completed", icon: ClipboardCheck, path: "/completed" },
+  { title: "Profile", icon: User, path: "/profile" },
 ];
 
-export default function Sidebar({ activePage, setActivePage }) {
+export default function Sidebar() {
   const [expanded, setExpanded] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
 
   const isOpen = expanded || mobileOpen;
 
+  // detect mobile
+  const isMobile = () =>
+    window.matchMedia("(max-width: 768px)").matches;
+
+  // navigation handler
+  const handleNavigate = (path) => {
+    navigate(path);
+
+    // only close sidebar on mobile
+    if (isMobile()) {
+      setMobileOpen(false);
+    }
+  };
+
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/');
-  }
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  useEffect(() => {
+    console.log("Sidebar mounted!")
+  }, [])
 
   return (
     <>
@@ -65,8 +68,12 @@ export default function Sidebar({ activePage, setActivePage }) {
       )}
 
       <aside
-        onMouseEnter={() => window.innerWidth >= 768 && setExpanded(true)}
-        onMouseLeave={() => window.innerWidth >= 768 && setExpanded(false)}
+        onMouseEnter={() =>
+          window.innerWidth >= 768 && setExpanded(true)
+        }
+        onMouseLeave={() =>
+          window.innerWidth >= 768 && setExpanded(false)
+        }
         className={`
           fixed md:relative
           top-0 left-0
@@ -87,7 +94,7 @@ export default function Sidebar({ activePage, setActivePage }) {
           ${expanded ? "md:w-64" : "md:w-24"}
         `}
       >
-        {/* Close button */}
+        {/* Close button (mobile only) */}
         <div className="md:hidden flex justify-end p-4">
           <button
             onClick={() => setMobileOpen(false)}
@@ -117,12 +124,14 @@ export default function Sidebar({ activePage, setActivePage }) {
           <ul className="space-y-2 flex flex-col justify-center">
             {menuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = activePage === item.title;
+
+              const isActive =
+                location.pathname === item.path;
 
               return (
                 <li key={item.title}>
                   <button
-                    onClick={() => navigate(item.path)}
+                    onClick={() => handleNavigate(item.path)}
                     className={`
                       w-full
                       flex
@@ -148,6 +157,7 @@ export default function Sidebar({ activePage, setActivePage }) {
                         overflow-hidden
                         whitespace-nowrap
                         transition-all duration-300
+
                         ${
                           isOpen
                             ? "opacity-100 max-w-37.5"
@@ -167,7 +177,7 @@ export default function Sidebar({ activePage, setActivePage }) {
         {/* Logout */}
         <div className="p-4 border-t">
           <button
-          onClick={handleLogout}
+            onClick={handleLogout}
             className="
               w-full
               flex
@@ -189,11 +199,7 @@ export default function Sidebar({ activePage, setActivePage }) {
                 overflow-hidden
                 whitespace-nowrap
                 transition-all duration-300
-                ${
-                  isOpen
-                    ? "opacity-100 max-w-37.5"
-                    : "opacity-0 max-w-0"
-                }
+                ${isOpen ? "opacity-100 max-w-37.5" : "opacity-0 max-w-0"}
               `}
             >
               Logout

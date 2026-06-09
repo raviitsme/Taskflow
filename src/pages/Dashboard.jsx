@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import StatsCard from "../components/StatsCard";
 import TaskCard from "../components/TaskCard";
@@ -44,7 +43,6 @@ export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState("All");
   const [editingTask, setEditingTask] = useState(null);
-  const [activePage, setActivePage] = useState("Dashboard");
   const navigate = useNavigate();
 
   const recentTasks = [...tasks]
@@ -130,7 +128,6 @@ export default function Dashboard() {
   return (
     <div className="flex h-screen overflow-hidden bg-bg text-white font-sans antialiased">
       {/* Sidebar */}
-      <Sidebar activePage={activePage} setActivePage={setActivePage} />
 
       {/* RIGHT SIDE */}
       <div className="flex-1 flex flex-col relative overflow-hidden">
@@ -215,7 +212,7 @@ export default function Dashboard() {
           </div>
 
           {/* TASKS */}
-          {activePage === "Dashboard" && (
+          {/* {activePage === "Dashboard" && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {recentTasks.map((task) => (
                 <TaskCard
@@ -247,8 +244,21 @@ export default function Dashboard() {
                 />
               ))}
             </div>
-          )}
-          
+          )} */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {recentTasks.map((task) => (
+              <TaskCard
+                key={task._id}
+                task={task}
+                onDelete={() => deleteTask(task._id)}
+                onToggle={() => toggleTask(task._id)}
+                onEdit={() => {
+                  setEditingTask(task);
+                  setOpen(true);
+                }}
+              />
+            ))}
+          </div>
 
           {/* EMPTY STATE */}
           {filteredTasks.length === 0 && (

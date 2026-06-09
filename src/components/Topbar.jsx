@@ -1,21 +1,22 @@
-import { Bell, Search, User } from "lucide-react";
+import { Bell, User } from "lucide-react";
+import { useUser } from "../../context/UserContext";
 
 export default function Topbar() {
+  const { user } = useUser();
+
   return (
     <header className="w-full h-16 px-4 md:px-6 pl-16 md:pl-6 flex items-center justify-end border-b bg-surface">
-
-      {/* Right Side */}
-      <div className="flex items-center gap-4 ml-4">
-        {/* Notification */}
+      <div className="flex items-center gap-4">
         <button className="relative p-2 rounded-lg hover:bg-white/10 transition">
           <Bell size={20} className="text-white" />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         </button>
 
-        {/* User */}
         <div className="flex items-center gap-2 px-3 py-1 rounded-lg hover:bg-white/10 transition cursor-pointer">
-          <User size={18} className="text-white" />
-          <span className="text-sm text-white hidden sm:block">User</span>
+          <User size={18} />
+
+          <span className="text-sm hidden sm:block">
+            {user?.name || "Loading..."}
+          </span>
         </div>
       </div>
     </header>

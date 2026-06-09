@@ -1,7 +1,14 @@
 import api from "./axios";
 
-export const getTasks = (page = 1, search = "", priority = "All") => {
-  return api.get(`/tasks?page=${page}&search=${search}&priority=${priority}`);
+export const getTasks = (
+  page = 1,
+  search = "",
+  priority = "All",
+  status = "All",
+) => {
+  return api.get(
+    `/tasks?page=${page}&search=${search}&priority=${priority}&status=${status}`,
+  );
 };
 export const createTask = (data) => {
   return api.post("/tasks", data);

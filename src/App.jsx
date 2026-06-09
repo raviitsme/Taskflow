@@ -1,27 +1,34 @@
 import { Routes, Route } from "react-router-dom";
-import LandingPage from "./LandingPage"
-import Dashboard from "./pages/Dashboard"
-import LoginForm from "./components/LoginForm";
-import ProtectedRoute from "./components/ProtectedRoute";
+
+import LandingPage from "./LandingPage";
+import Dashboard from "./pages/Dashboard";
 import MyTasks from "./pages/MyTasks";
+import Completed from "./pages/Completed";
+import Profile from "./pages/Profile";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import AppLayout from "../layout/AppLayout";
 
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
-      } />
-      <Route path="/tasks" element={
-        <ProtectedRoute>
-          <MyTasks/>
-        </ProtectedRoute>
-      }></Route>
+
+      <Route
+        element={
+          <ProtectedRoute>
+            <AppLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/tasks" element={<MyTasks />} />
+        <Route path="/completed" element={<Completed />} />
+        <Route path="/profile" element={<Profile />} />
+      </Route>
     </Routes>
-  )
+  );
 }
 
-export default App
+export default App;
