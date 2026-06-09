@@ -10,7 +10,7 @@ export const UserProvider = ({ children }) => {
     const fetchUser = async() => {
         try {
             const res = await getMe();
-            setUser(res.data.user);
+            setUser({ ...res.data.user });
         } catch (e) {
             console.log("Error fetching user : ", e);
         } finally {
@@ -31,6 +31,7 @@ export const UserProvider = ({ children }) => {
             value={{
                 user,
                 setUser,
+                fetchUser,
                 loading
             }}>
                 {children}

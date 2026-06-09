@@ -10,10 +10,12 @@ import {
 } from "lucide-react";
 import { useUser } from "../../context/UserContext";
 import { getTasks } from "../api/tasks";
+import EditProfileModal from "../components/EditProfileModal";
 
 export default function Profile() {
-  const { user } = useUser();
+  const { user, fetchUser } = useUser();
   const [tasks, setTasks] = useState([]);
+  const [openEdit, setOpenEdit] = useState(false);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -43,7 +45,6 @@ export default function Profile() {
         <Topbar />
 
         <main className="flex-1 min-h-0 p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full space-y-6">
-
           {/* Header */}
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">Profile</h1>
@@ -55,15 +56,18 @@ export default function Profile() {
           {/* Hero Card */}
           <div className="bg-white/5 border border-white/10 rounded-3xl p-5 sm:p-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
                 <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-full bg-primary flex items-center justify-center text-3xl sm:text-4xl font-bold shrink-0">
                   {user?.name?.charAt(0)?.toUpperCase() || "U"}
                 </div>
 
                 <div>
-                  <h2 className="text-2xl sm:text-4xl font-bold">{user?.name}</h2>
-                  <p className="text-white/50 text-sm sm:text-lg mt-1">{user?.email}</p>
+                  <h2 className="text-2xl sm:text-4xl font-bold">
+                    {user?.name}
+                  </h2>
+                  <p className="text-white/50 text-sm sm:text-lg mt-1">
+                    {user?.email}
+                  </p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 mt-4 text-white/70 text-sm">
                     <div className="flex items-center justify-center sm:justify-start gap-2">
@@ -92,7 +96,10 @@ export default function Profile() {
                 </div>
               </div>
 
-              <button className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary/80 transition text-sm sm:text-base">
+              <button
+                onClick={() => setOpenEdit(true)}
+                className="w-full cursor-pointer sm:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary/80 transition text-sm sm:text-base"
+              >
                 Edit Profile
               </button>
             </div>
@@ -156,17 +163,23 @@ export default function Profile() {
 
               <div className="space-y-4 text-white/60 text-sm sm:text-base">
                 <div>
-                  <p className="text-xs sm:text-sm text-white/40 mb-0.5">Name</p>
+                  <p className="text-xs sm:text-sm text-white/40 mb-0.5">
+                    Name
+                  </p>
                   <p className="text-white">{user?.name}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs sm:text-sm text-white/40 mb-0.5">Email</p>
+                  <p className="text-xs sm:text-sm text-white/40 mb-0.5">
+                    Email
+                  </p>
                   <p className="text-white break-all">{user?.email}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs sm:text-sm text-white/40 mb-0.5">Account Type</p>
+                  <p className="text-xs sm:text-sm text-white/40 mb-0.5">
+                    Account Type
+                  </p>
                   <p className="text-white">Standard User</p>
                 </div>
               </div>
@@ -203,9 +216,9 @@ export default function Profile() {
               </div>
             </div>
           </div>
-
         </main>
       </div>
+      <EditProfileModal isOpen={openEdit} onClose={() => setOpenEdit(false)} />
     </div>
   );
 }
