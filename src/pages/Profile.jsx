@@ -17,6 +17,11 @@ export default function Profile() {
   const [tasks, setTasks] = useState([]);
   const [openEdit, setOpenEdit] = useState(false);
 
+  const statusLabel = {
+    IN_PROGRESS : "In progress",
+    DONE : "Done"
+  }
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -30,7 +35,7 @@ export default function Profile() {
   }, []);
 
   const totalTasks = tasks.length;
-  const completedTasks = tasks.filter((task) => task.status === "Done").length;
+  const completedTasks = tasks.filter((task) => task.status === "DONE").length;
   const pendingTasks = totalTasks - completedTasks;
   const completionRate =
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
@@ -201,12 +206,12 @@ export default function Profile() {
 
                       <span
                         className={`text-xs px-2 py-1 rounded-full shrink-0 ${
-                          task.status === "Done"
+                          task.status === "DONE"
                             ? "bg-emerald-500/20 text-emerald-400"
                             : "bg-amber-500/20 text-amber-400"
                         }`}
                       >
-                        {task.status}
+                        {statusLabel[task.status] || task.status}
                       </span>
                     </div>
                   ))

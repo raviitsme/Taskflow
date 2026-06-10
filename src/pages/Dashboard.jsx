@@ -117,16 +117,16 @@ export default function Dashboard() {
   };
 
   // Filter Engine
-  const filteredTasks = tasks.filter((task) => {
+  const processedTasks = [...tasks].filter((task) => {
     if (filter === "All") return true;
     if (filter === "Pending") return task.status !== "Done";
     if (filter === "Done") return task.status === "Done";
     if (filter === "High") return task.priority === "High";
     return true;
-  });
+  }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
-    <div className="flex h-screen overflow-hidden bg-bg text-white font-sans antialiased">
+    <div className="flex h-screen overflow-hidden bg-bg text-white antialiased">
       {/* Sidebar */}
 
       {/* RIGHT SIDE */}
@@ -246,7 +246,7 @@ export default function Dashboard() {
             </div>
           )} */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {recentTasks.map((task) => (
+            {processedTasks.slice(0, 3).map((task) => (
               <TaskCard
                 key={task._id}
                 task={task}
@@ -261,7 +261,7 @@ export default function Dashboard() {
           </div>
 
           {/* EMPTY STATE */}
-          {filteredTasks.length === 0 && (
+          {processedTasks.length === 0 && (
             <div className="text-center text-white/40 py-10">
               No tasks found for "{filter}"
             </div>

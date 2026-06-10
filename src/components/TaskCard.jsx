@@ -15,9 +15,13 @@ export default function TaskCard({ task, onToggle, onDelete, onEdit }) {
       indicator: "bg-emerald-500",
     },
   };
+  const statusLabel = {
+    DONE : "Done",
+    IN_PROGRESS : "In progress"
+  }
 
   const theme = priorityThemes[task.priority] || priorityThemes.Low;
-  const isDone = task.status === "Done";
+  const isDone = task.status === "DONE";
 
   return (
     <div
@@ -106,7 +110,7 @@ export default function TaskCard({ task, onToggle, onDelete, onEdit }) {
           `}
         >
           {isDone ? <CheckCircle2 size={14} /> : <Clock size={14} />}
-          {task.status}
+          {statusLabel[task.status] || task.status}
         </span>
 
         {/* Due Date */}

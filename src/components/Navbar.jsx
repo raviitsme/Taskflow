@@ -92,7 +92,7 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
         </div>
 
         {/* Desktop Buttons */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex font-mono items-center gap-4">
           <button onClick={onLoginClick} className="text-white/80 cursor-pointer hover:text-white transition">
             Login
           </button>
@@ -131,8 +131,8 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
           {links.map((item) => (
             <a
               key={item.id}
-              href={`#${item.id}`} // ✅ Fixed: Added hash prefix
-              onClick={(e) => handleScrollToSection(e, item.id)} // ✅ Fixed: Mobile scroll handling + drawer auto close
+              href={`#${item.id}`} 
+              onClick={(e) => handleScrollToSection(e, item.id)} 
               className="text-white/80 hover:text-accent transition"
             >
               {item.title}
@@ -144,13 +144,13 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
           <button onClick={() => {
             onLoginClick();
             setMenuOpen(false);
-          }} className="text-left text-white/80 hover:text-white">
+          }} className="text-left font-mono text-white/80 hover:text-white">
             Login
           </button>
           <button onClick={() => {
             onRegisterClick();
             setMenuOpen(false);
-          }} className="rounded-full cursor-pointer bg-primary px-5 py-2 text-white">
+          }} className="rounded-full font-mono cursor-pointer bg-primary px-5 py-2 text-white">
             Get Started
           </button>
         </div>

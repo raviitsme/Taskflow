@@ -12,7 +12,8 @@ import AppLayout from "../layout/AppLayout";
 
 function App() {
   return (
-    <Routes>
+    <div className="font-mono">
+      <Routes>
       <Route path="/" element={<LandingPage />} />
 
       <Route
@@ -28,6 +29,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
       </Route>
     </Routes>
+    </div>
   );
 }
 

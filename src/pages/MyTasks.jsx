@@ -23,24 +23,24 @@ export default function MyTasks() {
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
 
-  const fetchTasks = async () => {
-    try {
-      const res = await getTasks(
-        page,
-        search,
-        priorityFilter,
-        statusFilter
-      );
-
-      setTasks(res.data.tasks);
-      setTotalPages(res.data.totalPages);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+const fetchTasks = async () => {
+  try {
+    console.log("Fetching with:", { page, search, priorityFilter, statusFilter });
+    const res = await getTasks(page, search, priorityFilter, statusFilter);
+    console.log("Response:", res.data);
+    setTasks(res.data.tasks);
+    setTotalPages(res.data.totalPages);
+  } catch (e) {
+    console.error(e);
+  }
+};
 
   useEffect(() => {
-    fetchTasks();
+    const timeout = setTimeout(() => {
+      fetchTasks();
+    }, 300); // slight debounce for search
+
+    return () => clearTimeout(timeout);
   }, [page, search, priorityFilter, statusFilter]);
 
   const handleSubmitTask = async (taskData) => {
@@ -49,8 +49,8 @@ export default function MyTasks() {
 
       setTasks((prev) =>
         prev.map((task) =>
-          task._id === editingTask._id ? res.data.task : task
-        )
+          task._id === editingTask._id ? res.data.task : task,
+        ),
       );
 
       setOpen(false);
@@ -66,9 +66,7 @@ export default function MyTasks() {
     try {
       await deleteTaskApi(id);
 
-      setTasks((prev) =>
-        prev.filter((task) => task._id !== id)
-      );
+      setTasks((prev) => prev.filter((task) => task._id !== id));
 
       fetchTasks();
     } catch (e) {
@@ -94,9 +92,7 @@ export default function MyTasks() {
         <main className="flex-1 overflow-y-auto p-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold">
-              My Tasks
-            </h1>
+            <h1 className="text-3xl font-bold">My Tasks</h1>
 
             <p className="text-white/40 mt-2">
               Manage all your tasks from one place.
@@ -143,9 +139,15 @@ export default function MyTasks() {
                 <option className="text-black" value="All">
                   All Priorities
                 </option>
-                <option className="text-black" value="High">High</option>
-                <option className="text-black" value="Medium">Medium</option>
-                <option className="text-black" value="Low">Low</option>
+                <option className="text-black" value="High">
+                  High
+                </option>
+                <option className="text-black" value="Medium">
+                  Medium
+                </option>
+                <option className="text-black" value="Low">
+                  Low
+                </option>
               </select>
 
               {/* Status Filter */}
@@ -166,10 +168,10 @@ export default function MyTasks() {
                 <option className="text-black" value="All">
                   All Status
                 </option>
-                <option className="text-black" value="In Progress">
+                <option className="text-black" value="IN_PROGRESS">
                   In Progress
                 </option>
-                <option className="text-black" value="Done">
+                <option className="text-black" value="DONE">
                   Done
                 </option>
               </select>
@@ -190,12 +192,8 @@ export default function MyTasks() {
                 <TaskCard
                   key={task._id}
                   task={task}
-                  onDelete={() =>
-                    deleteTask(task._id)
-                  }
-                  onToggle={() =>
-                    toggleTask(task._id)
-                  }
+                  onDelete={() => deleteTask(task._id)}
+                  onToggle={() => toggleTask(task._id)}
                   onEdit={() => {
                     setEditingTask(task);
                     setOpen(true);
@@ -205,9 +203,7 @@ export default function MyTasks() {
             </div>
           ) : (
             <div className="h-72 flex flex-col items-center justify-center border border-dashed border-white/10 rounded-3xl">
-              <h3 className="text-xl font-semibold">
-                No Tasks Found
-              </h3>
+              <h3 className="text-xl font-semibold">No Tasks Found</h3>
 
               <p className="text-white/40 mt-2">
                 Try changing filters or search keywords.
@@ -219,9 +215,7 @@ export default function MyTasks() {
           <div className="flex justify-center items-center gap-4 mt-10">
             <button
               disabled={page === 1}
-              onClick={() =>
-                setPage((prev) => prev - 1)
-              }
+              onClick={() => setPage((prev) => prev - 1)}
               className="
                 px-5 py-2.5
                 rounded-xl
@@ -235,18 +229,12 @@ export default function MyTasks() {
             </button>
 
             <div className="px-4 py-2 rounded-xl bg-white/5">
-              Page {tasks.length ? page : 0} of{" "}
-              {totalPages}
+              Page {tasks.length ? page : 0} of {totalPages}
             </div>
 
             <button
-              disabled={
-                page === totalPages ||
-                totalPages <= 1
-              }
-              onClick={() =>
-                setPage((prev) => prev + 1)
-              }
+              disabled={page === totalPages || totalPages <= 1}
+              onClick={() => setPage((prev) => prev + 1)}
               className="
                 px-5 py-2.5
                 rounded-xl
@@ -274,4 +262,3 @@ export default function MyTasks() {
     </div>
   );
 }
-

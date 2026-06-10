@@ -40,6 +40,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
     await updateProfile(formData);
 
     await getMe();
+    await fetchUser();
 
     await new Promise((res) => setTimeout(res, 800));
 
