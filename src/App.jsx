@@ -9,7 +9,6 @@ import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "../layout/AppLayout";
 
-
 function App() {
   return (
     <div className="font-mono">

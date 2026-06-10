@@ -2,9 +2,11 @@ export function CTAButton({
   className = "",
   children,
   onClick,
+  disabled
 }) {
   return (
     <button
+    disabled={disabled}
       onClick={onClick}
       className={`
         px-5 py-2

@@ -9,6 +9,7 @@ export default function LoginForm({ switchToRegister }) {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -27,9 +28,11 @@ export default function LoginForm({ switchToRegister }) {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setLoading(true);
 
     if (!email || !password) {
       setError("Please fill all fields!");
+      setLoading(false);
       return;
     }
 
@@ -38,7 +41,7 @@ export default function LoginForm({ switchToRegister }) {
 
       const data = res.data;
 
-      if (data.u.token) {
+      if (data?.u?.token) {
         localStorage.setItem("token", data.u.token);
 
         setError("");
@@ -51,6 +54,8 @@ export default function LoginForm({ switchToRegister }) {
     } catch (err) {
       console.log(err);
       setError(err.response?.data?.message || "Invalid Credentials");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,15 +81,7 @@ export default function LoginForm({ switchToRegister }) {
       <div className="flex justify-end">
         <button
           type="button"
-          className="
-            text-sm
-            text-primary
-            hover:text-accent
-            cursor-pointer
-            hover:underline
-            transition-all
-            duration-300
-          "
+          className="text-sm text-primary hover:text-accent cursor-pointer hover:underline"
         >
           Forgot Password?
         </button>
@@ -93,15 +90,20 @@ export default function LoginForm({ switchToRegister }) {
       {error && <p className="text-sm text-red-400 text-center">{error}</p>}
       {success && <p className="text-sm text-success text-center">{success}</p>}
       <CTAButton
-        className="w-full
-          bg-primary
-          py-4
-          font-semibold
-          hover:bg-accent
-          hover:scale-[1.02]
-          hover:rounded-3xl"
+        disabled={loading}
+        className={`
+    w-full
+    py-4
+    font-semibold
+    transition
+    ${
+      loading
+        ? "opacity-60 cursor-not-allowed"
+        : "hover:bg-accent hover:scale-[1.02] hover:rounded-3xl"
+    }
+  `}
       >
-        Submit
+        {loading ? "Logging in..." : "Login"}
       </CTAButton>
 
       <div className="relative">
@@ -134,7 +136,7 @@ export default function LoginForm({ switchToRegister }) {
           className="
             font-medium
             text-primary
-            cursor-progress
+            cursor-pointer
             hover:text-accent
             transition
   "

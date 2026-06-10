@@ -14,6 +14,8 @@ export default function RegisterForm({ switchToLogin }) {
   });
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const nameRegex = /^[A-Za-z\s]{3,}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,8 +34,8 @@ export default function RegisterForm({ switchToLogin }) {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if(!name || !email || !password || !confirmPassword) {
-      setError("Please fill all fields!")
+    if (!name || !email || !password || !confirmPassword) {
+      setError("Please fill all fields!");
       return;
     }
 
@@ -60,27 +62,30 @@ export default function RegisterForm({ switchToLogin }) {
     }
 
     setError("");
+    setLoading(true);
 
     try {
       const res = await registerUser({
         name,
         email,
         password,
-        confirmPassword,
       });
       const data = res.data;
 
       if (!data.success) {
         return alert(data.message);
       }
+      setSuccess("Thanks for registering, login now!");
 
-      alert("Thank you for registering, login now!");
-      switchToLogin();
+      setTimeout(() => {
+        switchToLogin();
+      }, 2200);
     } catch (e) {
       console.error(e);
       alert("Server error!");
+    } finally {
+      setLoading(false);
     }
-
   };
 
   return (
@@ -121,19 +126,18 @@ export default function RegisterForm({ switchToLogin }) {
       />
 
       {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
+      {success && <p className="text-success text-sm text-center">{success}</p>}
       <CTAButton
-        className="
-          w-full
-          bg-primary
-          py-4
-          font-semibold
-          hover:bg-accent
-          hover:scale-[1.02]
-          hover:rounded-3xl
-        "
+        disabled={loading}
+        className={`
+    w-full
+    py-4
+    font-semibold
+    transition
+    ${loading ? "opacity-60 cursor-not-allowed" : "hover:bg-accent hover:scale-[1.02] hover:rounded-3xl"}
+  `}
       >
-        Create Account
+        {loading ? "Creating Account..." : "Create Account"}
       </CTAButton>
 
       <div className="relative">
