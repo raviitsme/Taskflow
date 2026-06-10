@@ -81,7 +81,6 @@ export default function RegisterForm({ switchToLogin }) {
       alert("Server error!");
     }
 
-    console.log("Register:", formData);
   };
 
   return (

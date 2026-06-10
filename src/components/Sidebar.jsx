@@ -45,10 +45,6 @@ export default function Sidebar() {
     navigate("/");
   };
 
-  useEffect(() => {
-    console.log("Sidebar mounted!")
-  }, [])
-
   return (
     <>
       {/* Mobile Menu Button */}

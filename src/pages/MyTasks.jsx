@@ -25,9 +25,8 @@ export default function MyTasks() {
 
 const fetchTasks = async () => {
   try {
-    console.log("Fetching with:", { page, search, priorityFilter, statusFilter });
     const res = await getTasks(page, search, priorityFilter, statusFilter);
-    console.log("Response:", res.data);
+
     setTasks(res.data.tasks);
     setTotalPages(res.data.totalPages);
   } catch (e) {
